@@ -1,34 +1,34 @@
 import { useForm } from "react-hook-form";
-import useAuth from "../hooks/useAuth";
+import { useLoaderData } from "react-router-dom";
 import useAxiossecure from "../hooks/useAxiossecure";
 
-const Addproducts = () => {
-  const { user } = useAuth();
-  const axiosSecure = useAxiossecure();
+const EditProduct = () => {
+  const item = useLoaderData();
+  const axiosSecure = useAxiossecure()
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const productInfo = {
       title: data.title,
-      brand: data.brand,
       category: data.category,
       price: parseFloat(data.price),
-      image: data.image,
-      stock: parseFloat(data.stock),
       description: data.description,
+      brand: data.brand,
+      stock: parseFloat(data.stock),
+      image: data.image,
       discount: parseFloat(data.discount),
-      sellerEmail: user?.email,
     };
-    await axiosSecure.post("/add-product", productInfo).then((res) => {
-      console.log(res);
-      reset()
-    });
+    axiosSecure.patch(`/products/${item._id}`,productInfo)
+    .then(res => {
+        if(res?.data.modifiedCount > 0){
+            console.log(res);
+        }
+    })
   };
 
   return (
@@ -36,7 +36,7 @@ const Addproducts = () => {
       <div className="w-full max-w-5xl px-6 py-8 bg-gray-800 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 rounded-lg">
           <h2 className="text-3xl font-bold text-center text-blue-500 mb-6">
-            Add Product
+            Edit Product
           </h2>
 
           <div className="space-y-3">
@@ -50,9 +50,9 @@ const Addproducts = () => {
                   Title
                 </label>
                 <input
-                  placeholder="Enter product title"
                   id="title"
                   type="text"
+                  defaultValue={item?.title}
                   {...register("title", { required: "Title is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -72,9 +72,9 @@ const Addproducts = () => {
                   Image Link
                 </label>
                 <input
-                  placeholder="Enter image URL"
                   id="image"
                   type="url"
+                  defaultValue={item?.image}
                   {...register("image", { required: "Image link is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -97,7 +97,7 @@ const Addproducts = () => {
                 </label>
                 <select
                   id="category"
-                  defaultValue=""
+                  defaultValue={item?.category || ""}
                   {...register("category", {
                     required: "Category is required",
                   })}
@@ -127,9 +127,9 @@ const Addproducts = () => {
                   Price
                 </label>
                 <input
-                  placeholder="Enter product price"
                   id="price"
                   type="number"
+                  defaultValue={item?.price}
                   {...register("price", { required: "Price is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -152,7 +152,7 @@ const Addproducts = () => {
                 </label>
                 <select
                   id="brand"
-                  defaultValue=''
+                  defaultValue={item?.brand || ""}
                   {...register("brand", { required: "Brand is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 >
@@ -162,7 +162,7 @@ const Addproducts = () => {
                   <option value="Canon">Canon</option>
                   <option value="Nikon">Nikon</option>
                   <option value="Sony">Sony</option>
-                  <option value="Samsung">Samsung</option>
+                  <option value="Fujifilm">Samsung</option>
                 </select>
                 {errors.brand && (
                   <p className="text-red-500 text-xs mt-1">
@@ -170,6 +170,7 @@ const Addproducts = () => {
                   </p>
                 )}
               </div>
+
               <div>
                 <label
                   className="block text-sm font-medium text-gray-300 mb-1"
@@ -178,9 +179,9 @@ const Addproducts = () => {
                   Discount (%)
                 </label>
                 <input
-                  placeholder="Enter discount percentage"
                   id="discount"
                   type="number"
+                  defaultValue={item?.discount}
                   {...register("discount", {
                     min: { value: 0, message: "Discount cannot be negative" },
                     max: { value: 100, message: "Discount cannot exceed 100%" },
@@ -203,9 +204,9 @@ const Addproducts = () => {
                   Stock
                 </label>
                 <input
-                  placeholder="Enter stock quantity"
                   id="stock"
                   type="number"
+                  defaultValue={item?.stock}
                   {...register("stock", { required: "Stock is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -227,10 +228,10 @@ const Addproducts = () => {
               </label>
               <textarea
                 id="description"
+                defaultValue={item?.description}
                 {...register("description")}
                 className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 rows="4"
-                placeholder="Write a brief description about the product"
               />
             </div>
           </div>
@@ -241,7 +242,7 @@ const Addproducts = () => {
               type="submit"
               className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 font-medium transition duration-300 text-sm shadow-md"
             >
-              Add Product
+              Save Changes
             </button>
           </div>
         </form>
@@ -250,4 +251,4 @@ const Addproducts = () => {
   );
 };
 
-export default Addproducts;
+export default EditProduct;

@@ -8,9 +8,13 @@ import ProductCard from "./ProductCard";
 
 const Product = () => {
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('asc')
+  const [category, setCategory] = useState('')
+  const [brand, setBrand] = useState('')
   const [loading, setLoading] = useState(false);
   const axiosPublic = useAxiospublic();
-  console.log(products);
+  console.log(brand,category,search,sort);
 
   useEffect(() => {
     setLoading(true);
@@ -24,18 +28,32 @@ const Product = () => {
     fetchProducts();
   }, [axiosPublic]);
 
+  const handleSearch = e => {
+    e.preventDefault()
+    setSearch(e.target.search.value)
+    e.target.search.value = ''
+  }
+
+  const handleReset = () => {
+    setSearch('')
+    setSort('')
+    setCategory('')
+    setBrand('asc')
+    window.location.reload()
+  }
+
   return (
     <div className="bg-gray-900 min-h-screen">
       <div className="container mx-auto ">
         <div>
-          <SearchInput></SearchInput>
+          <SearchInput handleSearch={handleSearch}></SearchInput>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <SortMethod></SortMethod>
+            <SortMethod setSort={setSort}></SortMethod>
           </div>
           <div>
-            <Filter></Filter>
+            <Filter setCategory={setCategory} setBrand={setBrand} handleReset={handleReset}></Filter>
           </div>
         </div>
       </div>

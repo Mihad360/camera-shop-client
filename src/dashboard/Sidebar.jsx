@@ -33,7 +33,7 @@ const Sidebar = () => {
               <span className="text-sm font-medium">Add New Products</span>
             </NavLink>
             <NavLink
-              to="/dashboard/all-products"
+              to="/dashboard/view-added-products"
               className={({ isActive }) =>
                 `flex items-center gap-4 px-4 py-2 -lg transition ${
                   isActive ? "bg-gray-600 text-white" : "hover:bg-gray-800"
@@ -70,7 +70,7 @@ const Sidebar = () => {
               <span className="text-sm font-medium">All Users</span>
             </NavLink>
             <NavLink
-              to="/dashboard/users-products"
+              to="/dashboard/all-seller-products"
               className={({ isActive }) =>
                 `flex items-center gap-4 px-4 py-2 -lg transition ${
                   isActive ? "bg-gray-600 text-white" : "hover:bg-gray-800"
@@ -78,7 +78,7 @@ const Sidebar = () => {
               }
             >
               <RiAdminFill className="text-lg" />
-              <span className="text-sm font-medium">Users' Products</span>
+              <span className="text-sm font-medium">Seller Products</span>
             </NavLink>
           </div>
         )}

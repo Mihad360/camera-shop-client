@@ -1,23 +1,22 @@
 import { Navigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import useSeller from "../hooks/useSeller";
 import Loading from "../components/Loading";
 
-const Privateroute = ({ children }) => {
+const Sellerroute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const [isSeller, isSellerloading] = useSeller();
+  console.log(isSeller);
 
-  if (loading) {
-    return (
-      <div className="">
-        <Loading></Loading>
-      </div>
-    );
+  if (loading || isSellerloading) {
+    return <Loading></Loading>;
   }
 
-  if (user) {
+  if (user && isSeller) {
     return children;
   }
   return <Navigate to="/signin" state={{ from: location }} replace></Navigate>;
 };
 
-export default Privateroute;
+export default Sellerroute;

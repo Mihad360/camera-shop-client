@@ -1,29 +1,58 @@
 import { Link } from "react-router-dom";
 import useCart from "../hooks/useCart";
+import Swal from "sweetalert2";
+import useAxiossecure from "../hooks/useAxiossecure";
 
 const Cart = () => {
-  const [cart] = useCart();
+  const [cart, refetch] = useCart();
+  const axiosSecure = useAxiossecure();
   const totalPrice = cart?.reduce(
     (total, nextPrice) => total + nextPrice.price,
     0
   );
 
+  const handledelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/carts/${id}`).then((res) => {
+          console.log(res);
+          if (res?.data.deletedCount > 0) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your cart has been deleted.",
+              icon: "success",
+            });
+            refetch()
+          }
+        });
+      }
+    });
+  };
+
   return (
     <div className="container mx-auto py-10">
       {/* Page Title */}
       <h1 className="text-center text-4xl font-bold text-blue-400">
-        Your Cart
+        Your Carts
       </h1>
 
       <div className="rounded-lg p-6 mt-8">
         {/* Cart Overview */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <h2 className="text-2xl font-semibold text-white">
-            Total Products: <span className="text-blue-400">{cart?.length}</span>
+            Total Products:{" "}
+            <span className="text-blue-400">{cart?.length}</span>
           </h2>
           <p className="text-2xl font-semibold text-white">
-            Total Price:{" "}
-            <span className="text-amber-400">{totalPrice}</span> TK
+            Total Price: <span className="text-amber-400">{totalPrice}</span> TK
           </p>
           {/* {cart?.length ? (
             <Link to="/dashboard/payment">

@@ -4,13 +4,15 @@ import useAxiossecure from "../hooks/useAxiossecure";
 import { useNavigate } from "react-router-dom";
 import useAxiospublic from "../hooks/useAxiospublic";
 import useWishlist from "../hooks/useWishlist";
+import useUsers from "../hooks/useUsers";
 
 const ProductCard = ({ item }) => {
   const { user } = useAuth();
   const axiosSecure = useAxiossecure();
   const axiosPublic = useAxiospublic();
   const navigate = useNavigate();
-  const [wishlist, refetch] = useWishlist()
+  const [wishlist, refetch] = useWishlist();
+  const [users] = useUsers();
   const { title, image, description, price, category, brand } = item;
 
   const addtoCart = () => {
@@ -34,6 +36,7 @@ const ProductCard = ({ item }) => {
             showConfirmButton: false,
             timer: 1500,
           });
+          refetch();
         }
       });
     } else {
@@ -64,9 +67,9 @@ const ProductCard = ({ item }) => {
       brand,
     };
     axiosPublic.post("/wishlist", wishlistItem).then((res) => {
-      if(res?.data.insertedId){
+      if (res?.data.insertedId) {
         console.log(res);
-        refetch()
+        refetch();
       }
     });
   };
@@ -98,7 +101,9 @@ const ProductCard = ({ item }) => {
             <span className="text-xs font-medium bg-gray-700 text-gray-200 px-2 py-1 mr-2 rounded-full">
               {category}
             </span>
-            <span className="text-xs font-medium text-gray-400">{brand}</span>
+            <span className="text-xs font-medium bg-fuchsia-700 text-gray-200 px-2 py-1 mr-2 rounded-full">
+              {brand}
+            </span>
           </p>
           <p className="text-lg font-bold text-yellow-400">{`BDT ${price}`}</p>
         </div>
@@ -106,13 +111,21 @@ const ProductCard = ({ item }) => {
         {/* Product Price */}
         <div className="flex items-center justify-end mt-4">
           <div className="flex space-x-3">
-            {/* Add to Cart Button */}
-            <button
-              onClick={addtoCart}
-              className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-            >
-              Add to Cart
-            </button>
+            {users.role === "buyer" ? (
+              <button
+                onClick={addtoCart}
+                className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Add to Cart
+              </button>
+            ) : (
+              <button
+                disabled
+                className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Add to Cart
+              </button>
+            )}
 
             {/* Add to Wishlist Button */}
             <button

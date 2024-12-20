@@ -81,7 +81,7 @@ const Navbar = () => {
         {/* Icons */}
         <div className="flex items-center space-x-4 relative">
           <div>
-            <Link className="relative group hover:text-blue-400 transition duration-200">
+            <Link to="/wishlist" className="relative group hover:text-blue-400 transition duration-200">
               <MdFavorite className="text-3xl" />
               {/* Cart Item Count */}
               {wishlist?.length > 0 && (
