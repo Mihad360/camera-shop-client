@@ -17,7 +17,7 @@ const AllProducts = () => {
       confirmButtonText: "Yes, Remove it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosSecure.delete(`/products/${id}`).then((res) => {
+        axiosSecure.delete(`/admin-products/${id}`).then((res) => {
           console.log(res);
           if (res?.data.deletedCount > 0) {
             Swal.fire({

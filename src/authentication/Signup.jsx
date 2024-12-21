@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Googlelogin from "./Googlelogin";
 import useAxiospublic from "../hooks/useAxiospublic";
 import { updateProfile } from "firebase/auth";
+import { Bounce, toast } from "react-toastify";
 
 const image_hosting_key = import.meta.env.VITE_image_host_key;
 const image_hosting_url = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -11,6 +12,7 @@ const image_hosting_url = `https://api.imgbb.com/1/upload?key=${image_hosting_ke
 const Signup = () => {
   const { createUser, loading, user } = useAuth();
   const axiosPublic = useAxiospublic();
+  const navigate = useNavigate()
 
   const {
     register,
@@ -42,7 +44,19 @@ const Signup = () => {
     }
     const response = await axiosPublic.post('/users', userInfo)
     if(response.data.insertedId){
-      console.log(response);
+      toast("✔️ You are Signed Upped", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      navigate('/')
+      window.location.reload()
     }
   };
 

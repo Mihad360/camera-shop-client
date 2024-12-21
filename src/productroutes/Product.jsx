@@ -13,20 +13,23 @@ const Product = () => {
   const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
   const [loading, setLoading] = useState(false);
+  const [uniqueCategory, setuniqueCategory] = useState([])
+  const [uniqueBrand, setuniqueBrand] = useState([])
   const axiosPublic = useAxiospublic();
-  console.log(brand,category,search,sort);
 
   useEffect(() => {
     setLoading(true);
     const fetchProducts = async () => {
-      axiosPublic.get("/products").then((res) => {
+      axiosPublic.get(`/all-products?title=${search}&sort=${sort}&brand=${brand}&category=${category}`).then((res) => {
         console.log(res.data);
         setLoading(false);
-        setProducts(res.data);
+        setProducts(res.data.result);
+        setuniqueCategory(res.data.categories);
+        setuniqueBrand(res.data.brands);
       });
     };
     fetchProducts();
-  }, [axiosPublic]);
+  }, [axiosPublic,search,sort,brand,category]);
 
   const handleSearch = e => {
     e.preventDefault()
@@ -48,12 +51,12 @@ const Product = () => {
         <div>
           <SearchInput handleSearch={handleSearch}></SearchInput>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex-col px-5 md:px-0 items-center md:flex md:flex-row justify-between">
           <div>
             <SortMethod setSort={setSort}></SortMethod>
           </div>
           <div>
-            <Filter setCategory={setCategory} setBrand={setBrand} handleReset={handleReset}></Filter>
+            <Filter uniqueCategory={uniqueCategory} uniqueBrand={uniqueBrand} setCategory={setCategory} setBrand={setBrand} handleReset={handleReset}></Filter>
           </div>
         </div>
       </div>
@@ -69,7 +72,7 @@ const Product = () => {
                   No products available
                 </p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-5 md:px-0">
                   {products?.map((item) => (
                     <ProductCard key={item._id} item={item}></ProductCard>
                   ))}

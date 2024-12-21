@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import useAuth from "../hooks/useAuth";
 import useAxiossecure from "../hooks/useAxiossecure";
+import { Bounce, toast } from "react-toastify";
 
 const Addproducts = () => {
   const { user } = useAuth();
@@ -26,8 +27,21 @@ const Addproducts = () => {
       sellerEmail: user?.email,
     };
     await axiosSecure.post("/add-product", productInfo).then((res) => {
-      console.log(res);
-      reset()
+      if(res?.data.insertedId){
+
+        toast("✔️ The Product is updated", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        reset()
+      }
     });
   };
 

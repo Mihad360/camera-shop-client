@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Googlelogin from "./Googlelogin";
+import { Bounce, toast } from "react-toastify";
 
 const Signin = () => {
   const { createSignIn, user } = useAuth();
+  const navigate = useNavigate()
 
   const {
     register,
@@ -16,6 +18,19 @@ const Signin = () => {
     console.log(data);
     createSignIn(data.email, data.password).then((res) => {
       console.log(res);
+      toast("✔️ You are Signed In", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      navigate('/')
+      window.location.reload()
     });
   };
 

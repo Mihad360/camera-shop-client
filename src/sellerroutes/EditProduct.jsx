@@ -1,16 +1,34 @@
 import { useForm } from "react-hook-form";
-import { useLoaderData } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useAxiossecure from "../hooks/useAxiossecure";
+import { useEffect, useState } from "react";
+import { Bounce, toast } from "react-toastify";
+import useAllproducts from "../hooks/useAllproducts";
 
 const EditProduct = () => {
-  const item = useLoaderData();
-  const axiosSecure = useAxiossecure()
+  const [item, setItem] = useState(null); // Changed initial value to null
+  const { id } = useParams();
+  const axiosSecure = useAxiossecure();
+  const [, refetch] = useAllproducts();
 
+  // Use form hook
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      const res = await axiosSecure.get(`/products/${id}`);
+      setItem(res.data); // Set the item data
+
+      // After setting item data, call reset to initialize form with the fetched data
+      reset(res.data);
+    };
+    fetchItem();
+  }, [axiosSecure, id, reset]); // Added `reset` to dependency array
 
   const onSubmit = (data) => {
     const productInfo = {
@@ -23,13 +41,26 @@ const EditProduct = () => {
       image: data.image,
       discount: parseFloat(data.discount),
     };
-    axiosSecure.patch(`/products/${item._id}`,productInfo)
-    .then(res => {
-        if(res?.data.modifiedCount > 0){
-            console.log(res);
-        }
-    })
+
+    axiosSecure.patch(`/products/${item._id}`, productInfo).then((res) => {
+      if (res?.data.modifiedCount > 0) {
+        toast("✔️ The Product is updated", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        refetch();
+      }
+    });
   };
+
+  if (!item) return <div>Loading...</div>; // Show loading state while fetching
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-900">
@@ -52,7 +83,6 @@ const EditProduct = () => {
                 <input
                   id="title"
                   type="text"
-                  defaultValue={item?.title}
                   {...register("title", { required: "Title is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -74,7 +104,6 @@ const EditProduct = () => {
                 <input
                   id="image"
                   type="url"
-                  defaultValue={item?.image}
                   {...register("image", { required: "Image link is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -96,8 +125,8 @@ const EditProduct = () => {
                   Category
                 </label>
                 <select
+                  defaultValue=""
                   id="category"
-                  defaultValue={item?.category || ""}
                   {...register("category", {
                     required: "Category is required",
                   })}
@@ -129,7 +158,6 @@ const EditProduct = () => {
                 <input
                   id="price"
                   type="number"
-                  defaultValue={item?.price}
                   {...register("price", { required: "Price is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -151,8 +179,8 @@ const EditProduct = () => {
                   Brand
                 </label>
                 <select
+                  defaultValue=""
                   id="brand"
-                  defaultValue={item?.brand || ""}
                   {...register("brand", { required: "Brand is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 >
@@ -162,7 +190,7 @@ const EditProduct = () => {
                   <option value="Canon">Canon</option>
                   <option value="Nikon">Nikon</option>
                   <option value="Sony">Sony</option>
-                  <option value="Fujifilm">Samsung</option>
+                  <option value="Samsung">Samsung</option>
                 </select>
                 {errors.brand && (
                   <p className="text-red-500 text-xs mt-1">
@@ -181,7 +209,6 @@ const EditProduct = () => {
                 <input
                   id="discount"
                   type="number"
-                  defaultValue={item?.discount}
                   {...register("discount", {
                     min: { value: 0, message: "Discount cannot be negative" },
                     max: { value: 100, message: "Discount cannot exceed 100%" },
@@ -206,7 +233,6 @@ const EditProduct = () => {
                 <input
                   id="stock"
                   type="number"
-                  defaultValue={item?.stock}
                   {...register("stock", { required: "Stock is required" })}
                   className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
                 />
@@ -228,22 +254,20 @@ const EditProduct = () => {
               </label>
               <textarea
                 id="description"
-                defaultValue={item?.description}
                 {...register("description")}
                 className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-gray-300"
-                rows="4"
-              />
+                rows="3"
+              ></textarea>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <div className="text-center mt-6">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 font-medium transition duration-300 text-sm shadow-md"
-            >
-              Save Changes
-            </button>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded-md"
+              >
+                Update Product
+              </button>
+            </div>
           </div>
         </form>
       </div>

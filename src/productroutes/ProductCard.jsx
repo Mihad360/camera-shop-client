@@ -5,15 +5,17 @@ import { useNavigate } from "react-router-dom";
 import useAxiospublic from "../hooks/useAxiospublic";
 import useWishlist from "../hooks/useWishlist";
 import useUsers from "../hooks/useUsers";
+import Loading from "../components/Loading";
 
 const ProductCard = ({ item }) => {
   const { user } = useAuth();
+  const [users] = useUsers();
   const axiosSecure = useAxiossecure();
   const axiosPublic = useAxiospublic();
   const navigate = useNavigate();
   const [wishlist, refetch] = useWishlist();
-  const [users] = useUsers();
   const { title, image, description, price, category, brand } = item;
+  console.log(users);
 
   const addtoCart = () => {
     if (user && user?.email) {
@@ -74,6 +76,10 @@ const ProductCard = ({ item }) => {
     });
   };
 
+  if(!users && !user){
+    return <Loading></Loading>
+  }
+
   return (
     <div className="rounded-lg overflow-hidden shadow-2xl transform transition-all duration-300 bg-gray-800">
       {/* Product Image */}
@@ -111,25 +117,20 @@ const ProductCard = ({ item }) => {
         {/* Product Price */}
         <div className="flex items-center justify-end mt-4">
           <div className="flex space-x-3">
-            {users.role === "buyer" ? (
-              <button
-                onClick={addtoCart}
-                className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-              >
-                Add to Cart
-              </button>
-            ) : (
-              <button
-                disabled
-                className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-              >
-                Add to Cart
-              </button>
-            )}
+          
+            <button
+              onClick={addtoCart}
+              disabled={users?.role !== 'buyer'}
+              className="bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+            >
+              Add to Cart
+            </button>
+            
 
             {/* Add to Wishlist Button */}
             <button
               onClick={addtoWishlist}
+              disabled={users?.role !== 'buyer'}
               className="bg-gray-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-gray-700 transition-all duration-300 transform hover:scale-105"
             >
               Add to Wishlist

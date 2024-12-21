@@ -1,13 +1,23 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useUsers from "../hooks/useUsers";
 import { RiAdminFill, RiContactsBook3Fill } from "react-icons/ri";
 import { BsCameraReelsFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
 import { FaShop } from "react-icons/fa6";
+import { IoMdLogOut } from "react-icons/io";
+import useAuth from "../hooks/useAuth";
 
 const Sidebar = () => {
+  const {logout} = useAuth()
+  const navigate = useNavigate()
   const [users] = useUsers();
   console.log(users);
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/')
+    window.location.reload()
+  }
 
   return (
     <div className="h-screen bg-gray-900 text-gray-100 flex flex-col shadow-lg">
@@ -106,7 +116,7 @@ const Sidebar = () => {
 
           <li className="text-gray-300 hover:bg-gray-600 rounded-lg">
             <NavLink
-              to="/shop"
+              to="/products"
               className={({ isActive, isPending }) =>
                 isPending
                   ? "pending"
@@ -117,14 +127,14 @@ const Sidebar = () => {
             >
               <span className="flex items-center gap-3 py-2 px-4">
                 <FaShop className="text-xl" />
-                <span>Shop</span>
+                <span>Products</span>
               </span>
             </NavLink>
           </li>
 
           <li className="text-gray-300 hover:bg-gray-600 rounded-lg">
             <NavLink
-              to="/contactus"
+              to="/contact"
               className={({ isActive, isPending }) =>
                 isPending
                   ? "pending"
@@ -139,6 +149,10 @@ const Sidebar = () => {
               </span>
             </NavLink>
           </li>
+          <button onClick={handleLogout} className="px-4 py-1 flex items-center gap-3 bg-gray-600 text-gray-100 font-semibold text-lg hover:bg-gray-500 duration-150 hover:transition-all focus:ring-2 w-full">
+          <IoMdLogOut className="text-2xl" />
+          Log Out
+          </button>
         </ul>
       </div>
       <div className="p-4 border-t border-gray-700 text-center text-xs">

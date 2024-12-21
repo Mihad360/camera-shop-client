@@ -16,6 +16,8 @@ import Allusers from "../adminroutes/Allusers";
 import AllProducts from "../adminroutes/AllProducts";
 import Adminroute from "./Adminroute";
 import Sellerroute from "./Sellerroute";
+import About from "../aboutroutes/About";
+import Contact from "../contactus/Contact";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
       {
         path: "/wishlist",
         element: <Wishlist></Wishlist>,
+      },
+      {
+        path: "/about",
+        element: <About></About>,
+      },
+      {
+        path: "/contact",
+        element: <Contact></Contact>,
       },
     ],
   },
@@ -103,8 +113,6 @@ const router = createBrowserRouter([
             <EditProduct></EditProduct>
           </Sellerroute>
         ),
-        loader: ({ params }) =>
-          fetch(`http://localhost:5000/products/${params.id}`),
       },
     ],
   },
